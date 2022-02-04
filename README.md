@@ -3,7 +3,7 @@
 Fetchngs pipeline constitutes several built-in programs/scripts to retrieve metadata and raw FASTQ files from public and private databases such as SRA, ENA, DDBJ, GEO and Synapse. This pipeline is supported by [nf-core](https://nf-co.re/fetchngs)
 
 
-## **Instalation**
+## **Installation**
 
 Fetchngs is built using Nextflow, a workflow tool to run tasks across multiple compute infrastructures and it also uses Docker/Singularity containers making installation trivial and results highly reproducible. This guide covers the installation and configuration for Ubuntu
 
