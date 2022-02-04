@@ -1,6 +1,6 @@
 # **Fetchngs Pipeline From nf-core**
 
-Fetchngs pipeline constitutes several built-in programs/scripts to retrieve metadata and raw FASTQ files from public and private databases such as SRA, ENA, DDBJ, GEO and Synapse. This pipeline is supported by [nf-core] (https://nf-co.re/fetchngs)
+Fetchngs pipeline constitutes several built-in programs/scripts to retrieve metadata and raw FASTQ files from public and private databases such as SRA, ENA, DDBJ, GEO and Synapse. This pipeline is supported by [nf-core](https://nf-co.re/fetchngs)
 
 
 ## **Instalation**
