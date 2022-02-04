@@ -31,7 +31,7 @@ sudo mv nextflow /usr/local/bin/
 
 ### **Docker**
 
-For more information, visit [Docker website] (https://docs.docker.com/)
+For more information, visit [Docker website](https://docs.docker.com/)
 
 a. Update the apt package index, and install the latest version of Docker Engine
 
