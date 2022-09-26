@@ -51,26 +51,29 @@ fi
 
 # ---------------------------------------------------------------------
 # The following parameters should be provided:
+#    Mandatory
 # 1) Identifiers provided in a txt file, one per line. These can be from SRA, ENA, DDBJ, GEO or Synapse repositories
 # 2) Specifies the type of identifier provided {'sra', 'synapse'}
-# 3) CPUs
-# 4) Max memory to be used
-# 5) Provide a name. A samplesheet for direct use with the nf-core/rna-seq pipeline will be created {'rnaseq'}
-# 6) Optional (-x): If this run is a resume or a new job
-# 7) The output directory where the results will be saved
+# 3) Provide a name. A samplesheet for direct use with the nf-core/rna-seq pipeline will be created {'rnaseq'}
+# 4) The output directory where the results will be saved
+#    Optional
+# 5) CPUs
+# 6) Max memory to be used
+# 7) (-x): If this run is a resume or a new job
+
 # ---------------------------------------------------------------------
 
 
-while getopts i:t:p:m:n:x:o: flag
+while getopts i:t:n:o:p:m:x: flag
 do
     case "${flag}" in
         i) ID=${OPTARG};;
         t) type=${OPTARG};;
+        n) name=${OPTARG};;
+        o) output=${OPTARG};;
         p) cpu=${OPTARG};;
         m) memory=${OPTARG};;
-        n) name=${OPTARG};;
         x) resume=${OPTARG};;
-	o) output=${OPTARG};;
        \?) echo "Invalid option: $OPTARG" 1>&2;;
         :) echo "Invalid option: $OPTARG requires an argument" 1>&2;;
     esac
@@ -92,13 +95,15 @@ if [ $# -eq 0 ]; then
     echo ""
     echo " **Empty parameters! Unable to run**. Please provide the following parameters:"
     echo "
+            Mandatory
  	-i: Identifiers provided in a txt file, one per line. These can be from SRA, ENA, DDBJ, GEO or Synapse repositories
     	-t: Specifies the type of identifier provided {'sra', 'synapse'}
+	-n: Provide a name. A samplesheet for direct use with the nf-core/rna-seq pipeline will be created (CSV) {'rnaseq'}
+	-o: The output directory where the results will be saved
+	    Optional
  	-p: CPUs
  	-m: Max memory to be used (ej. -m 100.GB) Please note the syntaxis.
- 	-n: Provide a name. A samplesheet for direct use with the nf-core/rna-seq pipeline will be created (CSV) {'rnaseq'}
 	-x: resume a previous Job. Options: y/n
-	-o) The output directory where the results will be saved
 	    
 	 "
 
@@ -114,7 +119,7 @@ fi
 # ---------------------------------------------------------------------
 
 
-#Mandatory: Identifiers
+# Mandatory: Identifiers
 if [ -z "${ID}" ];then
 	printf "Missing Identifiers File. Please provide it and run again.\n"
 	exit 1
@@ -132,21 +137,21 @@ else
 fi
 
 
-#Mandatory: Type of identifier
+# Mandatory: Type of identifier
 if [ -z "${type}" ];then
 	printf "Missing Identifier Type. Please provide sra or synapse and run again.\n"
 	exit 1
 fi
 
 
-#Mandatory: Samplesheet name
+# Mandatory: Samplesheet name
 if [ -z "${name}" ];then
 	printf "Missing samplesheet name. Please provide it and run again.\n"
 	exit 1
 fi
 
 
-#Mandatory: Name of output directory
+# Mandatory: Name of output directory
 if [ -z "${output}" ];then
         printf "Output not provided.\n"
         output="SRA"
@@ -156,7 +161,21 @@ else
 fi
 
 
-#Optional: Resume previous job
+# Optional: CPU
+if [ -z "${cpu}" ];then
+	cpu=$(cat /proc/cpuinfo | grep -c 'processor')
+	printf "CPUs to use not provided. Using all $cpu cores available.\n"
+fi
+
+
+# Optional: Memory
+if [ -z "${memory}" ];then
+	memory=$(vmstat -s -S M | grep 'total memory' | awk '{ print $1 / (1024) }'  | awk '{ print int($1+0.5) }')
+	printf "Max memory not provided. Using all $memory GB of memory.\n"
+fi
+
+
+# Optional: Resume previous job
 if [[ "$resume" == "y" ]];then
 	printf "Resuming previous Job\n"
 	again="-resume"
@@ -166,20 +185,6 @@ elif [[ "$resume" == "n" ]];then
 else
 	printf "Missing option y/n for resuming process (-x option). Quitting.\n"
 	exit 1
-fi
-
-
-#Optional: Memory
-if [ -z "${memory}" ];then
-	memory=$(vmstat -s -S M | grep 'total memory' | awk '{ print $1 / (1024) }'  | awk '{ print int($1+0.5) }')
-	printf "Max memory not provided. Using all $memory GB of memory.\n"
-fi
-
-
-#Optional: CPU
-if [ -z "${cpu}" ];then
-	cpu=$(cat /proc/cpuinfo | grep -c 'processor')
-	printf "CPUs to use not provided. Using all $cpu cores available.\n"
 fi
 
 
