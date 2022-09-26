@@ -85,7 +85,7 @@ nf-core list
 To simplify the process, a `scr/fetch-data.sh` script provides a safe and efficient method for fetching data
 
 ```
-bash fetch-data.sh -i Astro_IDs.txt -t sra -p 8 -m 230 -n Astrocyte -x n
+bash fetch-data.sh -i IDs.txt -t sra -n rnaseq -o results -p 16 -m 250 -x n
 ```
 
 
@@ -99,13 +99,18 @@ bash fetch-data.sh -i Astro_IDs.txt -t sra -p 8 -m 230 -n Astrocyte -x n
 
 -	`-t:` Specifies the type of identifier provided: `sra`, `synapse`
 
+-	`-n:` Samplesheet name for direct use with the nf-core/rna-seq pipeline will be created (CSV) `rnaseq`
+
+-	`-o:` The output directory where the results will be saved
+
+
+### **Optional**
+
 -	`-p:` CPUs
 
 -	`-m:` Max memory to be used
 
--	`-n:`  Samplesheet name for direct use with the nf-core/rna-seq pipeline will be created (CSV)
-
--	`-x: ` This execution is a resume of a previous run or it is a new run. The options are: `y` or `n`
+-	`-x:` This execution is a resume of a previous run or it is a new run. The options are: `y` or `n`
 
 
 
@@ -117,13 +122,13 @@ The Nextflow `-bg` flag launches Nextflow in the background or alternatively, yo
 
 ## **Result**
 
-The script will create a local directory based on the type identifier provided. Within this directory, the following will be found
+The script will create a local directory based on the given output name showing the following folders:
 
--	`result:` Contains metadata and raw FASTQC files
+-	`output_name:` Contains metadata and raw FASTQC files
 
 -	`work:` Contains the main pipeline workflows
 
--	`20220113-001006.COMMAND:` Contains the commands used for the actual launch. File name contains the date (%y%m%d) and the time (%H%M%S) when the command was last run. Thus, if it is resumed, it will be overwritten
+-	`20220113-001006.COMMAND:` Contains the commands used for the actual launch. File name contains the date (%y%m%d) and the time (%H%M%S) when the command was last run.
 
 
 
