@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ---------------------------------------------------------------------
-# version 1.0
+# version 2.0
 # This script calls the nf-core/fetchngs pipeline as
 # implemented at GiBBS.
 # Institute for Genetics - National University of Colombia
@@ -55,12 +55,13 @@ fi
 # 2) Specifies the type of identifier provided {'sra', 'synapse'}
 # 3) CPUs
 # 4) Max memory to be used
-# 5) Provide a name. A samplesheet for direct use with the nf-core/rna-seq pipeline will be created 
+# 5) Provide a name. A samplesheet for direct use with the nf-core/rna-seq pipeline will be created {'rnaseq'}
 # 6) Optional (-x): If this run is a resume or a new job
+# 7) The output directory where the results will be saved
 # ---------------------------------------------------------------------
 
 
-while getopts i:t:p:m:n:x: flag
+while getopts i:t:p:m:n:x:o: flag
 do
     case "${flag}" in
         i) ID=${OPTARG};;
@@ -69,6 +70,7 @@ do
         m) memory=${OPTARG};;
         n) name=${OPTARG};;
         x) resume=${OPTARG};;
+	o) output=${OPTARG};;
        \?) echo "Invalid option: $OPTARG" 1>&2;;
         :) echo "Invalid option: $OPTARG requires an argument" 1>&2;;
     esac
@@ -94,8 +96,9 @@ if [ $# -eq 0 ]; then
     	-t: Specifies the type of identifier provided {'sra', 'synapse'}
  	-p: CPUs
  	-m: Max memory to be used (ej. -m 100.GB) Please note the syntaxis.
- 	-n: Provide a name. A samplesheet for direct use with the nf-core/rna-seq pipeline will be created (CSV)
+ 	-n: Provide a name. A samplesheet for direct use with the nf-core/rna-seq pipeline will be created (CSV) {'rnaseq'}
 	-x: resume a previous Job. Options: y/n
+	-o) The output directory where the results will be saved
 	    
 	 "
 
@@ -138,8 +141,18 @@ fi
 
 #Mandatory: Samplesheet name
 if [ -z "${name}" ];then
-	printf "Missing Samplesheet Name. Please provide it and run again.\n"
+	printf "Missing samplesheet name. Please provide it and run again.\n"
 	exit 1
+fi
+
+
+#Mandatory: Name of output directory
+if [ -z "${output}" ];then
+        printf "Output not provided.\n"
+        output="SRA"
+else
+    printf "Output set to: ${output}.\n"
+
 fi
 
 
@@ -170,19 +183,6 @@ if [ -z "${cpu}" ];then
 fi
 
 
-
-# ---------------------------------------------------------------------
-#                   ENVIRONMENT SETUP
-# Create Directory and setup enviroment 
-# Setup enviroment for running this job
-# ---------------------------------------------------------------------
-
-        
-#Create a working directory for this Job based on identifier type name.
-mkdir -p ${type}
-cd $type
-
-
 # ---------------------------------------------------------------------
 #
 # Let's prepare the command line
@@ -190,16 +190,18 @@ cd $type
 # ---------------------------------------------------------------------
 command="nextflow run nf-core/fetchngs $again \
       --input $ID \
+      --outdir $output \
       --input_type $type \
       --nf_core_pipeline $name  \
       --max_cpus $cpu \
-      --max_memory '$memory.GB' \
+      --max_memory $memory.GB \
       --force_sratools_download \
       -profile docker "
 
 
 
 #Create a file with the complete command line
+
 timestamp=$(date "+%Y%m%d-%H%M%S")
 printf "${command}" > ${timestamp}.COMMAND 
 
@@ -213,7 +215,7 @@ $command
 #-------------------------------------------
 
 # Verify if raw data was downloaded
-cd results
+cd ${output}
 
 data="fastq"
 if [ -z "${data}" ];then
